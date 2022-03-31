@@ -2,6 +2,7 @@ import Canvas from './canvas'
 import { generateProgram } from './program'
 
 import { Texture } from './types'
+import { Matrix } from './math'
 
 export default class Play {
 
@@ -11,7 +12,11 @@ export default class Play {
   get width(): number { return this.canvas.width }
   get height(): number { return this.canvas.height }
 
-  constructor(readonly canvas: Canvas) { }
+  projectionMatrix: Matrix
+
+  constructor(readonly canvas: Canvas) { 
+    this.projectionMatrix = Matrix.projection(this.width, this.height)
+  }
 
 
   glOnce = () => {
@@ -28,14 +33,13 @@ export default class Play {
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
   }
 
-  glProgram = (vSource: string, fSource: string) => {
+  glProgram = (vSource: string, fSource: string, nb: number) => {
 
     let { gl } = this
 
     let { program, uniformData, attributeData } = 
       generateProgram(gl, vSource, fSource)
 
-    // gl.uniformMatrix3fv(uniformData['projectionMatrix'].location, false, this.projectionMatrix)
     //gl.uniform1i(uniformData['uSampler'].location, 0)
 
     let vao = gl.createVertexArray()
@@ -43,11 +47,11 @@ export default class Play {
 
     let attributeBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, attributeBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, 24, gl.DYNAMIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, nb * 6 * 4, gl.DYNAMIC_DRAW)
     
     let indexBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, 32, gl.DYNAMIC_DRAW)
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, nb * 3 * 4, gl.DYNAMIC_DRAW)
 
     let stride = 0
 
@@ -67,16 +71,20 @@ export default class Play {
 
     return {
       program,
+      uniformData,
       indexBuffer,
       attributeBuffer,
       vao
     }
   }
   
-  glUse(program) {
+  glUse(program, uniformData) {
     let { gl } = this
 
     gl.useProgram(program)
+
+
+    gl.uniformMatrix3fv(uniformData['projectionMatrix'].location, false, this.projectionMatrix.array_t)
   }
 
   glAttribUpdate(buffer, srcData) {

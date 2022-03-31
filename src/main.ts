@@ -2,13 +2,17 @@
 import Canvas from './canvas'
 import Play from './play'
 
+import { Rectangle, Matrix } from './math'
+
 function manual(element: HTMLElement) {
 
   const vSource = `#version 300 es
 in vec2 aVertexPosition;
 
+uniform mat3 projectionMatrix;
+
 void main() {
-  gl_Position = vec4(aVertexPosition, 0, 1);
+  gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0, 1);
 }
 `
 
@@ -28,36 +32,47 @@ void main() {
 
   play.glOnce()
 
+  let nb = 2
 
   let { program, 
+    uniformData,
     indexBuffer, 
     attributeBuffer,
-    vao } = play.glProgram(vSource, fSource)
+    vao } = play.glProgram(vSource, fSource, nb)
 
-  play.glUse(program)
+  play.glUse(program, uniformData)
 
-  let nb = 1
 
   let _indexBuffer = new Uint16Array(nb * 3)
   let _attributeBuffer = new Float32Array(nb * 6)
-  
-  _attributeBuffer[0] = 0
-  _attributeBuffer[1] = 0
-  _attributeBuffer[2] = 0
-  _attributeBuffer[3] = 1
-  _attributeBuffer[4] = 1
-  _attributeBuffer[5] = 1
 
-  _indexBuffer[0] = 0
-  _indexBuffer[1] = 1
-  _indexBuffer[2] = 2
+  let el = Rectangle.unit.transform(
+    Matrix.unit
+    .translate(-0.5, 0.5)
+    .scale(1900, 100)
+    .translate(0.5, 0.5)
+    .translate(10, 10))
+
+
+  let { vertexData, indices } = el
+
+  let aIndex = 0,
+    iIndex = 0
+
+  for (let k = 0; k < vertexData.length; k+= 2) {
+    _attributeBuffer[aIndex++] = vertexData[k]
+    _attributeBuffer[aIndex++] = vertexData[k+1]
+  }
+
+  for (let k = 0; k < indices.length; k++) {
+    _indexBuffer[iIndex++] = indices[k]
+  }
 
   play.glAttribUpdate(attributeBuffer, _attributeBuffer)
   play.glIndexUpdate(indexBuffer, _indexBuffer)
 
   play.glClear()
   play.glDraw(8, vao)
-
 
 }
 
