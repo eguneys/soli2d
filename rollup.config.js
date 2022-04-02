@@ -4,6 +4,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve'
 import babel from '@rollup/plugin-babel'
 import css from 'rollup-plugin-import-css'
 import copy from 'rollup-plugin-copy'
+import image from '@rollup/plugin-image'
 
 import htmlTemplate from 'rollup-plugin-generate-html-template'
 import serve from 'rollup-plugin-serve'
@@ -35,6 +36,7 @@ export default args => {
       babel({ extensions, babelHelpers: 'bundled' }),
       css({minify: prod }),
       copy({ targets: [{ src: 'assets', dest: 'dist' }], copyOnce: true}),
+      image(),
       htmlTemplate({
         template: 'src/index.html',
         target: 'index.html',

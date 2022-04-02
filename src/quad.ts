@@ -6,8 +6,8 @@ export default class Quad {
   static make = (texture: Texture,
     x: number,
     y: number,
-    w: number,
-    h: number) => new Quad(texture,
+    w: number = texture.width,
+    h: number = texture.height) => new Quad(texture,
       Rectangle.make(x, y, w, h))
 
   readonly fsUv: Float32Array

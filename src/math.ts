@@ -5,15 +5,19 @@ export class Transform {
   readonly world: Matrix = Matrix.unit.clone
   readonly _local: Matrix = Matrix.unit.clone
 
+  size: Vec2 = Vec2.unit.clone
   pivot: Vec2 = Vec2.unit.half
   scale: Vec2 = Vec2.unit.clone
   rotation: number = 0
   translate: Vec2 = Vec2.zero.clone
 
   get local() {
-    let { scale, rotation, translate, pivot } = this
+    let { size, scale, rotation, translate, pivot } = this
+
+    // TODO GC
+    let _scale = scale.mul(size)
     this._local
-    .transform_in(scale, rotation, translate, pivot)
+    .transform_in(_scale, rotation, translate, pivot)
 
     return this._local
   }
@@ -71,7 +75,18 @@ export class Vec2 {
     return Vec2.make(this.x, this.y + n)
   }
 
-  set_in(x: number, y: number) {
+  mul(v: Vec2) {
+    let { clone } = this
+    clone.mul_in(v)
+    return clone
+  }
+
+  mul_in(v: Vec2) {
+    this.x *= v.x
+    this.y *= v.y
+  }
+
+  set_in(x: number, y: number = x) {
     this.x = x
     this.y = y
   }
@@ -274,7 +289,7 @@ export class Matrix {
     this.translate_in(-scale.x*0.5, -scale.y*0.5)
     this.rotate_in(rotation)
     //this.translate_in(scale.x *0.5, scale.y * 0.5)
-    //this.translate_in(scale.x * pivot.x, scale.y * pivot.y)
+    //this.translate_in(scale.x * 0.5, scale.y * 0.5)
     this.translate_in(translate.x, translate.y)
   }
 
