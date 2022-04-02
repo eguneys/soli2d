@@ -1,3 +1,47 @@
+export class Transform {
+
+  _parent?: Transform
+  readonly _children: Array<Transform> = []
+  readonly world: Matrix = Matrix.unit.clone
+  readonly _local: Matrix = Matrix.unit.clone
+
+  pivot: Vec2 = Vec2.unit.half
+  scale: Vec2 = Vec2.unit.clone
+  rotation: number = 0
+  translate: Vec2 = Vec2.zero.clone
+
+  get local() {
+    let { scale, rotation, translate, pivot } = this
+    this._local
+    .transform_in(scale, rotation, translate, pivot)
+
+    return this._local
+  }
+
+  _set_parent(_parent: Transform) {
+    _parent._children.push(this)
+    this._parent = _parent
+  }
+
+  _update_world(_parent_world: Matrix) {
+    if (_parent_world) {
+      this.world.set_in(_parent_world)
+      this.world.mul_in(this.local)
+    } else {
+      this.world.set_in(this.local)
+    }
+
+    let { world } = this
+
+    this._children
+    .forEach(child =>
+             child._update_world(world))
+  }
+}
+
+
+
+
 export class Vec2 {
 
   static make = (x: number, y: number) =>
@@ -10,6 +54,14 @@ export class Vec2 {
     return [this.x, this.y]
   }
 
+  get half(): Vec2 {
+    return new Vec2(this.x/2, this.y/2)
+  }
+
+  get clone(): Vec2 {
+    return new Vec2(this.x, this.y)
+  }
+
   constructor(readonly x: number, 
     readonly y: number) {
 
@@ -17,6 +69,11 @@ export class Vec2 {
 
   addy(n: number) {
     return Vec2.make(this.x, this.y + n)
+  }
+
+  set_in(x: number, y: number) {
+    this.x = x
+    this.y = y
   }
 }
 
@@ -80,6 +137,14 @@ export class Matrix {
     return new Matrix(a, b, c, d, tx, ty)
   }
 
+
+  get clone(): Matrix {
+    let { a, b, c, d, tx, ty } = this
+    return new Matrix(a,b,c,d,tx,ty)
+  }
+
+
+
   readonly array_t: Float32Array
 
   // a c tx
@@ -99,19 +164,30 @@ export class Matrix {
     ])
   }
 
-  rotate(r: number): Matrix {
+  rotate_in(r: number): Matrix {
 
     let cosa = Math.cos(r),
       sina = Math.sin(r)
 
-    let a = cosa * this.a - sina * this.b,
-      b = sina * this.a + cosa * this.b,
-      c = cosa * this.c - sina * this.d,
-      d = sina * this.c + cosa * this.d,
-      tx = cosa * this.tx - sina * this.ty,
-      ty = sina * this.tx + cosa * this.ty
+    let a = this.a * cosa - this.b * sina,
+      b = this.a * sina + this.b * cosa,
+      c = this.c * cosa - this.d * sina,
+      d = this.c * sina + this.d * cosa,
+      tx = this.tx * cosa - this.ty * sina,
+      ty = this.tx * sina + this.ty * cosa
 
-    return new Matrix(a, b, c, d, tx, ty)
+    this.a = a
+    this.b = b
+    this.c = c
+    this.d = d
+    this.tx = tx
+    this.ty = ty
+  }
+
+  rotate(r: number): Matrix {
+    let { clone } = this
+    clone.rotate_in(r)
+    return clone
   }
 
   scale(x: number, y: number): Matrix {
@@ -126,7 +202,7 @@ export class Matrix {
     return new Matrix(a, b, c, d, tx, ty)
   }
 
-  translate(x: number, y: number): Matrix {
+  translate_in(x: number, y: number): Matrix {
 
     let a = this.a,
       b = this.b,
@@ -135,9 +211,21 @@ export class Matrix {
       tx = x + this.tx,
       ty = y + this.ty
 
-    return new Matrix(a, b, c, d, tx, ty)
+    this.tx = tx
+    this.ty = ty
   }
 
+
+  translate(x: number, y: number) {
+    let { clone } = this
+    clone.translate_in(x, y)
+    return clone
+  }
+
+  scale_in(x: number, y: number) {
+    this.a = x
+    this.d = y
+  }
 
   mVec2(v: Vec2): Vec2 {
 
@@ -153,6 +241,43 @@ export class Matrix {
 
     return Vec2.make(x, y)
   }
+
+
+  mul_in(m: Matrix) {
+    let { a, b, c, d, tx, ty } = this
+
+    this.a = m.a * a + m.b * c
+    this.b = m.a * b + m.b * d
+    this.c = m.c * a + m.d * c
+    this.d = m.c * b + m.d * d
+
+    this.tx = m.tx * a + m.ty * c + tx
+    this.ty = m.tx * b + m.ty * d + ty
+  }
+
+  set_in(m: Matrix) {
+    let { a, b, c, d, tx, ty } = m
+
+    this.a = a
+    this.b = b
+    this.c = c
+    this.d = d
+    this.tx = tx
+    this.ty = ty
+  }
+
+  transform_in(scale: Vec2, rotation: number, translate: Vec2, pivot: Vec2 = Vec2.half) {
+    this.set_in(Matrix.unit)
+    this.translate_in(-0.5, -0.5)
+    this.scale_in(scale.x, scale.y)
+    this.translate_in(0.5, 0.5)
+    this.translate_in(-scale.x*0.5, -scale.y*0.5)
+    this.rotate_in(rotation)
+    //this.translate_in(scale.x *0.5, scale.y * 0.5)
+    //this.translate_in(scale.x * pivot.x, scale.y * pivot.y)
+    this.translate_in(translate.x, translate.y)
+  }
+
 }
 
 
