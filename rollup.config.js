@@ -10,22 +10,25 @@ import htmlTemplate from 'rollup-plugin-generate-html-template'
 import serve from 'rollup-plugin-serve'
 import livereload from 'rollup-plugin-livereload'
 
-import { terser }  from 'rollup-plugin-terser'
+//import { terser }  from 'rollup-plugin-terser'
 
 let extensions = ['.ts', '.tsx']
 
 export default args => {
   let prod = args['config-prod']
 
+  let dist = prod ? 'dist' : 'build'
+  let format = prod ? 'esm' : 'iife'
+
   return {
-    input: 'src/main.ts',
+    input: prod ? 'src/index.ts' : 'src/main.ts',
     output: {
-      format: 'iife',
+      format,
       name: 'Soli2d',
-      dir: 'dist',
+      dir: dist,
       ...(prod ? {
-        entryFileNames: '[name].min.js',
-        plugins: [terser({mangle: true })]
+   //     entryFileNames: '[name].min.js',
+   //     plugins: [terser({mangle: true })]
       } : { sourcemap: true })
     },
     watch: {
@@ -35,17 +38,17 @@ export default args => {
       nodeResolve({ extensions, browser: true }),
       babel({ extensions, babelHelpers: 'bundled' }),
       css({minify: prod }),
-      copy({ targets: [{ src: 'assets', dest: 'dist' }], copyOnce: true}),
+      ...(prod ? [] : [copy({ targets: [{ src: 'assets', dest: dist }], copyOnce: true})]),
       image(),
-      htmlTemplate({
-        template: 'src/index.html',
-        target: 'index.html',
-        /* https://github.com/bengsfort/rollup-plugin-generate-html-template/issues/12 */
-        prefix: '/'
-      }),
       ...(prod? [] : [
-        serve({ contentBase: 'dist', port: 3000, historyApiFallback: true }),
-        livereload({ watch: 'dist', port: 8080 })
+        htmlTemplate({
+          template: 'src/index.html',
+          target: 'index.html',
+          /* https://github.com/bengsfort/rollup-plugin-generate-html-template/issues/12 */
+          prefix: '/'
+        }),
+        serve({ contentBase: dist, port: 3000, historyApiFallback: true }),
+        livereload({ watch: dist, port: 8080 })
       ])
     ]
 

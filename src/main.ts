@@ -333,10 +333,10 @@ void main() {
   let els = []
   let quads = []
 
+  let stuff = []
 
   let stage = new Transform()
   let totalDudes = 20
-  console.log(stage.local)
 
   for (let i = 0; i < totalDudes; i++) {
     let dude = new Transform()
@@ -352,7 +352,45 @@ void main() {
       Quad.make(image, 0, 0, 128, 128),
       Math.random() * 0xffffff
     ))
+
+    stuff.push({
+      direction: Math.random() * Math.PI * 2,
+      turningSpeed: Math.random() - 0.8,
+      speed: 2 + Math.random() * 2
+    })
   }
+
+  let dudeBounds = Rectangle.make(-100,
+                                  -100,
+  canvas.width + 100 * 2,
+  canvas.height + 100 * 2)
+
+  loop((dt: number, dt0: number) => {
+    
+    stuff.forEach((stuff, i) => {
+      let el = els[i]
+      stuff.direction += stuff.turningSpeed * 0.01
+      el.x += Math.sin(stuff.direction) * stuff.speed
+      el.y += Math.cos(stuff.direction) * stuff.speed
+      el.rotation = -stuff.direction - Math.PI / 2 
+
+      if (el.x < dudeBounds.x) {
+        el.x += dudeBounds.w
+      } else if (el.x > dudeBounds.x2) {
+        el.x -= dudeBounds.w
+      }
+
+      if (el.y < dudeBounds.y) {
+        el.y += dudeBounds.h
+      } else if (el.y > dudeBounds.y2) {
+        el.y -= dudeBounds.h
+      }
+
+      stage._update_world()
+    })
+  })
+
+  console.log(dudeBounds)
 
   stage._update_world()
 

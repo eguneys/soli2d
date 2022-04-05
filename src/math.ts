@@ -1,15 +1,33 @@
 export class Transform {
 
   _parent?: Transform
-  readonly _children: Array<Transform> = []
-  readonly world: Matrix = Matrix.unit.clone
-  readonly _local: Matrix = Matrix.unit.clone
 
-  size: Vec2 = Vec2.unit.clone
+  constructor(readonly _children: Array<Transform> = [],
+              readonly world: Matrix = Matrix.unit,
+              readonly _local: Matrix = Matrix.unit) {}
+
+
+
+  size: Vec2 = Vec2.unit
   pivot: Vec2 = Vec2.unit.half
-  scale: Vec2 = Vec2.unit.clone
+  scale: Vec2 = Vec2.unit
   rotation: number = 0
-  translate: Vec2 = Vec2.zero.clone
+  translate: Vec2 = Vec2.zero
+
+  get clone() {
+    let res = new Transform(this._children, this.world, this._local)
+    res._parent = this._parent
+
+    res.size = this.size
+    res.pivot = this.pivot
+    res.scale = this.scale
+    res.rotation = this.rotation
+    res.translate = this.translate
+
+
+    res._update_world()
+    return res
+  }
 
   get local() {
     let { size, scale, rotation, translate, pivot } = this
@@ -20,6 +38,20 @@ export class Transform {
     .transform_in(_scale, rotation, translate, pivot)
 
     return this._local
+  }
+
+  get x() {
+    return this.translate.x
+  }
+  set x(x: number) {
+    this.translate.set_in(x, this.y)
+  }
+
+  get y() {
+    return this.translate.y
+  }
+  set y(y: number) {
+    this.translate.set_in(this.x, y)
   }
 
   _set_parent(_parent: Transform) {
@@ -51,8 +83,8 @@ export class Vec2 {
   static make = (x: number, y: number) =>
     new Vec2(x, y)
 
-  static unit = new Vec2(1, 1)
-  static zero = new Vec2(0, 0)
+  static get unit() { return new Vec2(1, 1) }
+  static get zero() { return new Vec2(0, 0) }
 
   get vs(): Array<number> {
     return [this.x, this.y]
@@ -103,7 +135,7 @@ export class Rectangle {
     ])
 
 
-  static unit = Rectangle.make(0, 0, 1, 1)
+  static get unit() { return Rectangle.make(0, 0, 1, 1) }
 
   
   get x1() { return this.vertices[0].x }
@@ -136,9 +168,9 @@ export class Rectangle {
 
 export class Matrix {
 
-  static identity = new Matrix(1, 0, 0, 1, 0, 0)
+  static get identity() { return new Matrix(1, 0, 0, 1, 0, 0) }
 
-  static unit = Matrix.identity
+  static get unit() { return Matrix.identity }
 
   static projection = (width: number, height: number) => {
     let b = 0,
