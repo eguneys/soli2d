@@ -12,6 +12,11 @@ import { TexTint } from './textint'
 
 import { color_rgb, Color } from './util'
 
+import { vSource, fSource } from './shaders'
+
+import { Soli2d } from './index'
+
+
 let rate = 1000/60
 const ticks = {
   one: rate,
@@ -284,44 +289,6 @@ void main() {
 
 const basic_tinting = (element: HTMLElement, image: HTMLImageElement) => {
 
-  const vSource = `#version 300 es
-in vec3 aTint;
-in vec2 aVertexPosition;
-in vec2 aTextureCoord;
-
-uniform mat3 projectionMatrix;
-
-out vec2 vTextureCoord;
-out vec3 vTint;
-
-void main() {
-  gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0, 1);
-
-  vTextureCoord = aTextureCoord;
-  vTint = aTint;
-}
-`
-
-  const fSource = `#version 300 es
-precision highp float;
-
-in vec3 aTint;
-in vec2 vTextureCoord;
-in vec3 vTint;
-out vec4 outColor;
-
-uniform sampler2D uSampler;
-
-void main() {
-  //outColor = vec4(1.0, 1.0, 0.0, 1.0);
-  vec4 color = texture(uSampler, vTextureCoord);
-  color.rgb *= vTint;
-  outColor = vec4(color.rgb * color.a, color.a);
-}
-
-`
-
-
   let canvas = new Canvas(element, 800, 600)
   let play = new Play(canvas)
 
@@ -455,12 +422,30 @@ void main() {
 
 }
 
+
+const soli_setup = (element: HTMLElement, image: HTMLImageElement) => {
+
+  let root = Soli2d(element, image, 320, 180)
+
+
+  let res = new Transform()
+  res.size.set_in(128, 128)
+  res.quad = Quad.make(image, 0, 0, 128, 128),
+  res.tint = Math.random() * 0xffffff
+
+  res._set_parent(root)
+
+  res._update_world()
+
+}
+
 export default function app(element: HTMLElement) {
 
   //manual(element)
   load_image(sprites_png).then(image => {
     //basic_container(element, image)
-    basic_tinting(element, image)
+    //basic_tinting(element, image)
+    soli_setup(element, image)
   })
 
 }

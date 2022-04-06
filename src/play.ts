@@ -34,9 +34,6 @@ export default class Play {
 
     gl.viewport(0, 0, this.width, this.height)
     gl.clearColor(...color_rgb(color||0x000000), 1)
-
-    console.log(color_rgb(color))
-
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
   }

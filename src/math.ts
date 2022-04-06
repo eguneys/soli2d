@@ -1,4 +1,19 @@
+import { TexTint } from './textint'
+
 export class Transform {
+
+
+  __flat: Array<Transform>
+  get _flat() {
+    if (!this.__flat) {
+      this.__flat = [
+        this,
+        ...this._children.flatMap(_ => _._flat)
+      ]
+    }
+    return this.__flat
+  }
+
 
   _parent?: Transform
 
@@ -6,8 +21,28 @@ export class Transform {
               readonly world: Matrix = Matrix.unit,
               readonly _local: Matrix = Matrix.unit) {}
 
+  // sprite props
+  textint?: TexTint
 
+  get quad() {
+    return this.textint?.quad
+  }
 
+  get tint() {
+    return this.textint?.tint
+  }
+
+  set quad(quad: Quad) {
+    this.textint = new TexTint(quad, this.textint?.tint)
+  }
+
+  set tint(tint?: Color) {
+    if (this.textint) {
+      this.textint.tint = tint
+    }
+  }
+
+  // transform props
   size: Vec2 = Vec2.unit
   pivot: Vec2 = Vec2.unit.half
   scale: Vec2 = Vec2.unit
@@ -55,6 +90,7 @@ export class Transform {
   }
 
   _set_parent(_parent: Transform) {
+    _parent.__flat = undefined
     _parent._children.push(this)
     this._parent = _parent
   }
