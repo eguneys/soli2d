@@ -358,7 +358,6 @@ export class Matrix {
     this.translate_in(0.5, 0.5)
     this.translate_in(-scale.x*0.5, -scale.y*0.5)
     this.rotate_in(rotation)
-    //this.translate_in(scale.x *0.5, scale.y * 0.5)
     //this.translate_in(scale.x * 0.5, scale.y * 0.5)
     this.translate_in(translate.x, translate.y)
   }

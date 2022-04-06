@@ -429,13 +429,15 @@ const soli_setup = (element: HTMLElement, image: HTMLImageElement) => {
 
 
   let res = new Transform()
-  res.size.set_in(128, 128)
-  res.quad = Quad.make(image, 0, 0, 128, 128),
-  res.tint = Math.random() * 0xffffff
+  res.size.set_in(90, 90)
+  res.quad = Quad.make(image, 0, 2, 1, 1),
+  //res.tint = Math.random() * 0xffffff
 
   res._set_parent(root)
+  res.translate.set_in(60, 90)
 
   res._update_world()
+  console.log(res)
 
 }
 

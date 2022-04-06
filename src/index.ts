@@ -111,6 +111,7 @@ export function loop(fn: (dt: number, dt0: number) => void) {
     fn(dt, dt0)
 
     dt0 = dt
+    timestamp0 = timestamp
     requestAnimationFrame(step)
   }
   requestAnimationFrame(step)
