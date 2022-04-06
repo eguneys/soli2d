@@ -33,10 +33,12 @@ export class Transform {
   }
 
   set quad(quad: Quad) {
-    this.textint = new TexTint(quad, this.textint?.tint)
+    this.textint = new TexTint(quad, this._tint)
   }
 
+  _tint: Color = 0xffffff
   set tint(tint?: Color) {
+    this._tint = tint
     if (this.textint) {
       this.textint.tint = tint
     }
@@ -50,14 +52,14 @@ export class Transform {
   translate: Vec2 = Vec2.zero
 
   get clone() {
-    let res = new Transform(this._children, this.world, this._local)
+    let res = new Transform(this._children.slice(0), this.world.clone, this._local.clone)
     res._parent = this._parent
 
-    res.size = this.size
-    res.pivot = this.pivot
-    res.scale = this.scale
+    res.size = this.size.clone
+    res.pivot = this.pivot.clone
+    res.scale = this.scale.clone
     res.rotation = this.rotation
-    res.translate = this.translate
+    res.translate = this.translate.clone
 
 
     res._update_world()
