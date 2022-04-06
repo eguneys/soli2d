@@ -46,7 +46,7 @@ export class Transform {
 
   // transform props
   size: Vec2 = Vec2.unit
-  pivot: Vec2 = Vec2.unit.half
+  pivot: Vec2 = Vec2.zero
   scale: Vec2 = Vec2.unit
   rotation: number = 0
   translate: Vec2 = Vec2.zero
@@ -352,6 +352,8 @@ export class Matrix {
   }
 
   transform_in(scale: Vec2, rotation: number, translate: Vec2, pivot: Vec2 = Vec2.half) {
+
+    /*
     this.set_in(Matrix.unit)
     this.translate_in(-0.5, -0.5)
     this.scale_in(scale.x, scale.y)
@@ -360,6 +362,16 @@ export class Matrix {
     this.rotate_in(rotation)
     //this.translate_in(scale.x * 0.5, scale.y * 0.5)
     this.translate_in(translate.x, translate.y)
+
+   */
+
+   this.a = Math.cos(rotation) * scale.x
+   this.b = Math.sin(rotation) * scale.x
+   this.c = - Math.sin(rotation) * scale.y
+   this.d = Math.cos(rotation) * scale.y
+
+   this.tx = translate.x - (pivot.x * this.a + pivot.y * this.c)
+   this.ty = translate.y - (pivot.x * this.b + pivot.y * this.d)
   }
 
 }
