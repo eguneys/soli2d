@@ -50,6 +50,7 @@ export const Soli2d = (element: HTMLElement, image: HTMLImageElement, width: num
       iIndex = 0,
       iNb = 0
 
+
     stage._flat.forEach((el, i) => {
       let { world, quad, tint } = el
       if (!quad) {
@@ -83,7 +84,7 @@ export const Soli2d = (element: HTMLElement, image: HTMLImageElement, width: num
     play.glAttribUpdate(attributeBuffer, _attributeBuffer)
     play.glIndexUpdate(indexBuffer, _indexBuffer)
 
-    play.glDraw(nb * 4, vao)
+    play.glDraw(iNb * 6, vao)
 
 
   })

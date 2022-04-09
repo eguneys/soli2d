@@ -44,7 +44,7 @@ fragmentSource: string): Program {
   const keys = Object.keys(attributeData)
 
   for (let i = 0; i < keys.length; i++) {
-    attributeData[keys[i]].location = i
+    attributeData[keys[i]]["location"] = i
     gl.bindAttribLocation(glProgram, i, keys[i])
   }
 
@@ -56,7 +56,7 @@ fragmentSource: string): Program {
 
   for (let i in uniformData) {
     let data = uniformData[i]
-    uniformData[i].location = gl.getUniformLocation(glProgram, i)!
+    uniformData[i]["location"] = gl.getUniformLocation(glProgram, i)!
   }
 
   return new Program(uniformData, attributeData, glProgram)

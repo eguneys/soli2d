@@ -431,11 +431,25 @@ const soli_setup = (element: HTMLElement, image: HTMLImageElement) => {
   let res = new Transform()
   res.size = new Vec2(90, 90)
   res.quad = Quad.make(image, 0, 2, 1, 1),
-  //res.tint = Math.random() * 0xffffff
+  res.tint = Math.random() * 0xffffff
 
   res._set_parent(root)
   res.x = 160
   res.y = 90
+
+
+  res = new Transform()
+  res.size = new Vec2(90, 90)
+  res.quad = Quad.make(image, 0, 2, 1, 1),
+  res.tint = Math.random() * 0xffffff
+
+  res._set_parent(root)
+  res.x = 60
+  res.y = 0
+
+  setTimeout(() => {
+    root._clean_children()
+  }, 1000)
 
   root._update_world()
   console.log(res)

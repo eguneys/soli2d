@@ -91,10 +91,24 @@ export class Transform {
     this.translate.set_in(this.x, y)
   }
 
+  _dirty_upto_parent() {
+    let node = this
+    do {
+      node.__flat = undefined
+    } while(node = node._parent)
+
+  }
+
+  _clean_children() {
+    this._children.splice(0)
+    this._dirty_upto_parent()
+  }
+
   _set_parent(_parent: Transform) {
-    _parent.__flat = undefined
     _parent._children.push(this)
     this._parent = _parent
+
+    this._dirty_upto_parent()
   }
 
   _update_world(_parent_world: Matrix) {
