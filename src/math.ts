@@ -111,6 +111,29 @@ export class Transform {
     this._dirty_upto_parent()
   }
 
+  get _next_sibling() {
+    return this._parent._children[this._parent._children.indexOf(this) + 1]
+  }
+
+  _insert_before(new_child, reference_child) {
+    this._children.splice(this._children.indexOf(reference_child), 0, new_child)
+    new_child._parent = this
+    new_child._dirty_upto_parent()
+  }
+
+  _replace_child(new_child, old_child) {
+    this._children.splice(this._children.indexOf(old_child), 1, new_child)
+    new_child._parent = this
+    new_child._dirty_upto_parent()
+  }
+
+
+  _remove() {
+    this._parent._children.splice(this._parent._children.indexOf(this), 1)
+    this._parent._dirty_upto_parent()
+    this._parent = undefined
+  }
+
   _update_world(_parent_world: Matrix) {
     if (_parent_world) {
       this.world.set_in(_parent_world)
