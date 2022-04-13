@@ -116,12 +116,18 @@ export class Transform {
   }
 
   _insert_before(new_child, reference_child) {
-    this._children.splice(this._children.indexOf(reference_child), 0, new_child)
+    let i_ref = this._children.indexOf(reference_child)
+    if (i_ref === -1) {
+      i_ref = this._children.length
+    }
+    new_child._remove()
+    this._children.splice(i_ref, 0, new_child)
     new_child._parent = this
     new_child._dirty_upto_parent()
   }
 
   _replace_child(new_child, old_child) {
+    new_child._remove()
     this._children.splice(this._children.indexOf(old_child), 1, new_child)
     new_child._parent = this
     new_child._dirty_upto_parent()
@@ -129,6 +135,9 @@ export class Transform {
 
 
   _remove() {
+    if (!this._parent) {
+      return
+    }
     this._parent._children.splice(this._parent._children.indexOf(this), 1)
     this._parent._dirty_upto_parent()
     this._parent = undefined
