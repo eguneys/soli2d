@@ -174,6 +174,14 @@ export class Vec2 {
     return [this.x, this.y]
   }
 
+  get mul_inverse(): Vec2 {
+    return new Vec2(1/this.x, 1/this.y)
+  }
+
+  get add_inverse(): Vec2 {
+    return new Vec2(-this.x, -this.y)
+  }
+
   get half(): Vec2 {
     return new Vec2(this.x/2, this.y/2)
   }
@@ -191,6 +199,29 @@ export class Vec2 {
     return Vec2.make(this.x, this.y + n)
   }
 
+  add(v: Vec2) {
+    let { clone } = this
+    clone.add_in(v)
+    return clone
+  }
+
+  add_in(v: Vec2) {
+    this.x += v.x
+    this.y += v.y
+  }
+
+
+  sub(v: Vec2) {
+    let { clone } = this
+    clone.sub_in(v)
+    return clone
+  }
+
+  sub_in(v: Vec2) {
+    this.x -= v.x
+    this.y -= v.y
+  }
+
   mul(v: Vec2) {
     let { clone } = this
     clone.mul_in(v)
@@ -200,6 +231,17 @@ export class Vec2 {
   mul_in(v: Vec2) {
     this.x *= v.x
     this.y *= v.y
+  }
+
+  div(v: Vec2) {
+    let { clone } = this
+    clone.div_in(v)
+    return clone
+  }
+
+  div_in(v: Vec2) {
+    this.x /= v.x
+    this.y /= v.y
   }
 
   set_in(x: number, y: number = x) {

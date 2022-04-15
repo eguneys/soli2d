@@ -23,7 +23,7 @@ export const Soli2d = (element: HTMLElement, image: HTMLImageElement, width: num
 
   let stage = new Transform()
 
-  let nb = 24000
+  let nb = 256000
 
   let { program, 
     uniformData,
@@ -40,7 +40,7 @@ export const Soli2d = (element: HTMLElement, image: HTMLImageElement, width: num
   let { glTexture } = play.glTexture()
   play.glUseTexture(glTexture, image)
 
-  loop((dt: number, dt0: number) => {
+  let render = (dt: number, dt0: number) => {
 
     play.glClear()
 
@@ -87,10 +87,9 @@ export const Soli2d = (element: HTMLElement, image: HTMLImageElement, width: num
     play.glDraw(iNb * 6, vao)
 
 
-  })
+  } 
 
-
-  return stage
+  return [render, stage, canvas.$canvas]
 }
 
 
