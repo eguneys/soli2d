@@ -29,7 +29,7 @@ export class Transform {
   }
 
   get tint() {
-    return this.textint?.tint
+    return this._tint
   }
 
   set quad(quad: Quad) {
@@ -52,16 +52,20 @@ export class Transform {
   translate: Vec2 = Vec2.zero
 
   get clone() {
-    let res = new Transform(this._children.slice(0), this.world.clone, this._local.clone)
-    res._parent = this._parent
+    let res = new Transform([], this.world.clone, this._local.clone)
+    //res._parent = this._parent
+    this._children.forEach(_ => _.clone._set_parent(res))
 
     res.size = this.size.clone
     res.pivot = this.pivot.clone
     res.scale = this.scale.clone
     res.rotation = this.rotation
     res.translate = this.translate.clone
+    res.quad  = this.quad
+    res.tint = this.tint
 
 
+    res._dirty_upto_parent()
     res._update_world()
     return res
   }
@@ -191,9 +195,7 @@ export class Vec2 {
   }
 
   constructor(readonly x: number, 
-    readonly y: number) {
-
-  }
+    readonly y: number) { }
 
   addy(n: number) {
     return Vec2.make(this.x, this.y + n)
