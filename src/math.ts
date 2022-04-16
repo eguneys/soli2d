@@ -317,6 +317,20 @@ export class Matrix {
   }
 
 
+  get inverse(): Matrix {
+    let { a, b, c, d, tx, ty } = this
+
+    let n = a * d - b * c
+
+    let a1 = d / n,
+      b1 = -b / n,
+      c1 = -c / n,
+      d1 = a / n,
+      tx1 = (c * ty - d * tx) / n,
+      ty1 = -(a * ty - b * tx) / n
+
+    return new Matrix(a1, b1, c1, d1, tx1, ty1)
+  }
 
   readonly array_t: Float32Array
 

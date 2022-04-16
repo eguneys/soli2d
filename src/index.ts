@@ -95,6 +95,7 @@ export const Soli2d = (element: HTMLElement, image: HTMLImageElement, width: num
 
 
 export function loop(fn: (dt: number, dt0: number) => void) {
+  let animation_frame_id
   let fixed_dt = 1000/60
   let timestamp0: number | undefined,
   min_dt = fixed_dt,
@@ -112,7 +113,11 @@ export function loop(fn: (dt: number, dt0: number) => void) {
 
     dt0 = dt
     timestamp0 = timestamp
-    requestAnimationFrame(step)
+    animation_frame_id = requestAnimationFrame(step)
   }
-  requestAnimationFrame(step)
+  animation_frame_id = requestAnimationFrame(step)
+
+  return () => {
+    cancelAnimationFrame(animation_frame_id)
+  }
 }
