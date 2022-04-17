@@ -265,6 +265,12 @@ export class Rectangle {
 
   static get unit() { return Rectangle.make(0, 0, 1, 1) }
 
+
+  get vs() { 
+    let { x, y, w, h } = this
+    return [x, y, w, h] 
+  }
+
   
   get x1() { return this.vertices[0].x }
   get y1() { return this.vertices[0].y }
