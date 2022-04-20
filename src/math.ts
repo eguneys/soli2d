@@ -104,6 +104,7 @@ export class Transform {
   }
 
   _clean_children() {
+    this._children.forEach(_ => _.parent = undefined)
     this._children.splice(0)
     this._dirty_upto_parent()
   }
@@ -119,13 +120,25 @@ export class Transform {
     return this._parent._children[this._parent._children.indexOf(this) + 1]
   }
 
+  get _first_child() {
+    return this._children[0]
+  }
+
   _insert_before(new_child, reference_child) {
+
+    if (new_child === reference_child) {
+      return
+    }
+
+    new_child._remove()
+
     let i_ref = this._children.indexOf(reference_child)
     if (i_ref === -1) {
       i_ref = this._children.length
     }
-    new_child._remove()
+
     this._children.splice(i_ref, 0, new_child)
+
     new_child._parent = this
     new_child._dirty_upto_parent()
   }
@@ -133,6 +146,7 @@ export class Transform {
   _replace_child(new_child, old_child) {
     new_child._remove()
     this._children.splice(this._children.indexOf(old_child), 1, new_child)
+    old_child._parent = undefined
     new_child._parent = this
     new_child._dirty_upto_parent()
   }
