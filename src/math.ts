@@ -2,6 +2,7 @@ import { TexTint } from './textint'
 
 export class Transform {
 
+  on_event?: () => boolean | undefined
 
   __flat: Array<Transform>
   get _flat() {

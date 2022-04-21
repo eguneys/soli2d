@@ -12,7 +12,6 @@ import { Rectangle, Transform } from './math'
 import { vSource, fSource } from './shaders'
 import { color_rgb, Color } from './util'
 
-
 export const Soli2d = (element: HTMLElement, image: HTMLImageElement, width: number, height: number) => {
 
   let canvas = new Canvas(element, width, height)
@@ -50,11 +49,12 @@ export const Soli2d = (element: HTMLElement, image: HTMLImageElement, width: num
       iIndex = 0,
       iNb = 0
 
-
-    stage._flat.forEach((el, i) => {
+    for (let i = 0; i < stage._flat.length; i++) {
+      let el = stage._flat[i]
       let { world, quad, tint } = el
+
       if (!quad) {
-        return
+        continue
       }
 
       let {vertexData, indices } = Rectangle.unit.transform(world)
@@ -79,7 +79,15 @@ export const Soli2d = (element: HTMLElement, image: HTMLImageElement, width: num
       }
 
       iNb++;
-    })
+    }
+
+    let event_handled = false
+
+    for (let i = stage._flat.length-1; i >= 0; i--) {
+      let el = stage._flat[i]
+
+      event_handled ||= el.on_event?.()
+    }
 
     play.glAttribUpdate(attributeBuffer, _attributeBuffer)
     play.glIndexUpdate(indexBuffer, _indexBuffer)
