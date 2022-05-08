@@ -205,12 +205,21 @@ export class Vec2 {
     return new Vec2(this.x/2, this.y/2)
   }
 
+  get length() {
+    return Math.sqrt(this.x * this.x + this.y * this.y)
+  }
+
   get clone(): Vec2 {
     return new Vec2(this.x, this.y)
   }
 
   constructor(readonly x: number, 
     readonly y: number) { }
+
+
+  distance(v: Vec2) {
+    return this.sub(v).length
+  }
 
   addy(n: number) {
     return Vec2.make(this.x, this.y + n)
