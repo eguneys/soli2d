@@ -183,6 +183,9 @@ export class Transform {
 
 export class Vec2 {
 
+  static from_angle = (n: number) =>
+    new Vec2(Math.cos(n), Math.sin(n))
+
   static make = (x: number, y: number) =>
     new Vec2(x, y)
 
@@ -209,8 +212,19 @@ export class Vec2 {
     return Math.sqrt(this.x * this.x + this.y * this.y)
   }
 
+  get normalize() {
+    if (this.length === 0) {
+      return Vec2.zero
+    }
+    return this.scale(1/this.length)
+  }
+
   get clone(): Vec2 {
     return new Vec2(this.x, this.y)
+  }
+
+  get angle(): number {
+    return Math.atan2(this.y, this.x)
   }
 
   constructor(readonly x: number, 
@@ -223,6 +237,14 @@ export class Vec2 {
 
   addy(n: number) {
     return Vec2.make(this.x, this.y + n)
+  }
+
+  add_angle(n: number) {
+    return Vec2.from_angle(this.angle + n)
+  }
+
+  scale(n: number) {
+    return Vec2.make(this.x * n, this.y * n)
   }
 
   add(v: Vec2) {
