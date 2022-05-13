@@ -244,57 +244,65 @@ export class Vec2 {
   }
 
   scale(n: number) {
-    return Vec2.make(this.x * n, this.y * n)
+    let { clone } = this
+    return clone.scale_in(n)
+  }
+
+  scale_in(n: number) {
+    this.x *= n
+    this.y *= n
+    return this
   }
 
   add(v: Vec2) {
     let { clone } = this
-    clone.add_in(v)
-    return clone
+    return clone.add_in(v)
   }
 
   add_in(v: Vec2) {
     this.x += v.x
     this.y += v.y
+    return this
   }
 
 
   sub(v: Vec2) {
     let { clone } = this
-    clone.sub_in(v)
-    return clone
+    return clone.sub_in(v)
   }
 
   sub_in(v: Vec2) {
     this.x -= v.x
     this.y -= v.y
+    return this
   }
 
   mul(v: Vec2) {
     let { clone } = this
-    clone.mul_in(v)
-    return clone
+    return clone.mul_in(v)
   }
 
   mul_in(v: Vec2) {
     this.x *= v.x
     this.y *= v.y
+    return this
   }
 
   div(v: Vec2) {
     let { clone } = this
-    clone.div_in(v)
-    return clone
+    return clone.div_in(v)
   }
 
   div_in(v: Vec2) {
     this.x /= v.x
     this.y /= v.y
+    return this
   }
 
   set_in(x: number, y: number = x) {
     this.x = x
     this.y = y
+    return this
   }
 }
 
