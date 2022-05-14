@@ -200,7 +200,7 @@ export class Vec2 {
     return new Vec2(1/this.x, 1/this.y)
   }
 
-  get add_inverse(): Vec2 {
+  get inverse(): Vec2 {
     return new Vec2(-this.x, -this.y)
   }
 
@@ -208,8 +208,12 @@ export class Vec2 {
     return new Vec2(this.x/2, this.y/2)
   }
 
+  get length_squared() {
+    return this.x * this.x + this.y * this.y
+  }
+
   get length() {
-    return Math.sqrt(this.x * this.x + this.y * this.y)
+    return Math.sqrt(this.length_squared)
   }
 
   get normalize() {
@@ -217,6 +221,10 @@ export class Vec2 {
       return Vec2.zero
     }
     return this.scale(1/this.length)
+  }
+
+  get perpendicular() {
+    return new Vec2(-this.y, this.x)
   }
 
   get clone(): Vec2 {
@@ -230,6 +238,22 @@ export class Vec2 {
   constructor(readonly x: number, 
     readonly y: number) { }
 
+
+  dot(v: Vec2) {
+    return this.x * v.x + this.y * v.y
+  }
+
+  cross(v: Vec2) {
+    return this.x * v.y - this.y * v.x
+  }
+
+
+
+  project_to(v: Vec2) {
+    let lsq = v.length_squared
+    let dp = this.dot(v)
+    return Vec2.make(dp * v.x / lsq, dp * v.y / lsq)
+  }
 
   distance(v: Vec2) {
     return this.sub(v).length
@@ -299,11 +323,12 @@ export class Vec2 {
     return this
   }
 
-  set_in(x: number, y: number = x) {
+  set_in(x: number, y: number = this.y) {
     this.x = x
     this.y = y
     return this
   }
+
 }
 
 
